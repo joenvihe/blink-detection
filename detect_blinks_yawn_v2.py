@@ -16,7 +16,8 @@
 #   MIENTRAS MAS GRANDE SEA EL VALOR DE F quiere decir que el usuario tuvo mas tiempo el OJO ABIERTO
 #   UN VALOR MENOR DE F quiere decir que el usuario tuvo menos tiempo el OJO ABIERTO
 # - El valor de F podemos usarlo como PUNTAJE para el usuario, mientras sea menor, tiene mayor puntos.
-#################################################################
+# - la tecla "q" es para salir.
+# #################################################################
 
 
 # import the necessary packages
