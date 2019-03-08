@@ -9,7 +9,7 @@
 # - con la tecla "c" apretado por 2da vez, finaliza la calibracion, agarrando el limite
 #   superior del  valor de los ojos cerrados
 # - Se visualizara el valor calibrado
-# - con la tecla "i" iniciamos el juego y compara el valor de los ojos con lo calibrado
+# - con la tecla "i" iniciamos el jueiigo y compara el valor de los ojos con lo calibrado
 #   empieza a contar si los OJOS estan abiertos, si los OJOS ESTAN CERRADOS no cuenta (valor F en la imagen)
 # - con la tecla "p" para el contador, se aprieta apenas el jugador finaliza el juego
 #   se detiene el contador y podemos ver el puntaje de F
@@ -31,12 +31,20 @@ import cv2
 import matplotlib.pyplot as plt
 from skimage import exposure
 import operator
+import pygame
 
 
 # features
 EYE_AR_THRESH = 0.24
-EYE_AR_CONSEC_FRAMES = 3
+EYE_AR_CONSEC_FRAMES = 5
 YAWN_AR_THRESH = 32
+CALIBRADO_DEFAULT = 0.25
+# para que suene la alarma
+sound_flag = False
+flag = 0
+
+# cantidad de frames
+frame_check = 5
 
 # initialize the frame counters and the total number of blinks
 COUNTER = 0
@@ -107,6 +115,10 @@ def top_lip(landmarks):
 	top_lip_mean = np.mean(top_lip_pts, axis=0)
 	return int(top_lip_mean[:, 1])
 
+def play_sound(path):
+    pygame.init()
+    pygame.mixer.music.load(path)
+    pygame.mixer.music.play()
 
 def bottom_lip(landmarks):
 	bottom_lip_pts = []
@@ -137,7 +149,7 @@ if __name__ == "__main__":
     time.sleep(1.0)
 
     # loop over frames from the video stream
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
 
     # Flag para identificar si esta calibrando
     calibra = False
@@ -202,13 +214,24 @@ if __name__ == "__main__":
             # el estado cuenta identifica si para o no de contar
             ######################################################
             if ear > EYE_AR_THRESH and cuenta :
-                COUNTER += 1
+                COUNTER += 1                  
+                   
                 # if the eyes were closed for a sufficient number of
                 # then increment the total number of blinks
                 if COUNTER >= EYE_AR_CONSEC_FRAMES:
                     TOTAL += 1
+                    if not sound_flag:
+                        play_sound("./alarm.mp3")
+                        sound_flag = True
+
+                    cv2.putText(frame, "********************************** OJOS ABIERTOS!! **********************************", (10, 800),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
                     # reset the eye frame counter
                     COUNTER = 0
+                else:
+                    sound_flag = False
+                    
+    
             ######################################################
 
             # draw the total number of blinks on the frame along with
@@ -260,7 +283,12 @@ if __name__ == "__main__":
 
                 l = list(open_eyes)
                 l.sort(reverse=True)
-                eyes_calibrado = round(l[0], 2)
+                v_calibrado =  round(l[0], 2)
+                if v_calibrado >=CALIBRADO_DEFAULT:
+                    v_calibrado = CALIBRADO_DEFAULT
+                #aumento_de_limite = 0.00
+                #eyes_calibrado = round(l[0]+aumento_de_limite, 2)
+                eyes_calibrado = round(v_calibrado, 2)
                 texto = True
 
                 print(eyes_calibrado)
