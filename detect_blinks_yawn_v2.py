@@ -38,7 +38,7 @@ import pygame
 EYE_AR_THRESH = 0.24
 EYE_AR_CONSEC_FRAMES = 5
 YAWN_AR_THRESH = 32
-CALIBRADO_DEFAULT = 0.25
+CALIBRADO_DEFAULT = 0.26
 # para que suene la alarma
 sound_flag = False
 flag = 0
@@ -149,7 +149,7 @@ if __name__ == "__main__":
     time.sleep(1.0)
 
     # loop over frames from the video stream
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
 
     # Flag para identificar si esta calibrando
     calibra = False
@@ -284,7 +284,7 @@ if __name__ == "__main__":
                 l = list(open_eyes)
                 l.sort(reverse=True)
                 v_calibrado =  round(l[0], 2)
-                if v_calibrado >=CALIBRADO_DEFAULT:
+                if v_calibrado >= CALIBRADO_DEFAULT:
                     v_calibrado = CALIBRADO_DEFAULT
                 #aumento_de_limite = 0.00
                 #eyes_calibrado = round(l[0]+aumento_de_limite, 2)
