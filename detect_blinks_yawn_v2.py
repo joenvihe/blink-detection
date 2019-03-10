@@ -22,6 +22,7 @@
 
 # import the necessary packages
 from scipy.spatial import distance as dist
+from datetime import datetime
 from imutils import face_utils
 import numpy as np
 import imutils
@@ -49,6 +50,8 @@ frame_check = 5
 # initialize the frame counters and the total number of blinks
 COUNTER = 0
 TOTAL = 0
+
+size = None
 
 # initialize dlib's face detector (HOG-based) and then create the facial landmark predictor
 print("[INFO] loading facial landmark predictor...")
@@ -150,6 +153,8 @@ if __name__ == "__main__":
 
     # loop over frames from the video stream
     cap = cv2.VideoCapture(0)
+
+    frame_arr = []  # create frames array for video
 
     # Flag para identificar si esta calibrando
     calibra = False
@@ -291,7 +296,7 @@ if __name__ == "__main__":
                 eyes_calibrado = round(v_calibrado, 2)
                 texto = True
 
-                print(eyes_calibrado)
+                print("Calibrating...", eyes_calibrado)
                 EYE_AR_THRESH = eyes_calibrado
             else:
                 calibra = True
@@ -303,7 +308,6 @@ if __name__ == "__main__":
 
         # en este etapa se crea un arreglo de la calibracion
         if calibra:
-            print("gage")
             if ear_round in open_eyes:
                 open_eyes[ear_round] += 1
             else:
@@ -322,6 +326,21 @@ if __name__ == "__main__":
         cv2.imshow("Frame", frame)
         cv2.imshow("Frame2", gray)
 
+        if cuenta:
+            height, width, layers = frame.shape
+            size = (width, height)
+            frame_arr.append(frame)  # record video (basically)
 
     # do a bit of cleanup
     cv2.destroyAllWindows()
+
+    # save video
+    if size:
+        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        video = cv2.VideoWriter('{}.avi'.format(timestamp), cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
+        for f in frame_arr:
+            video.write(f)
+        video.release()
+        print("Successfully saved {}.avi!".format(timestamp))
+    else:
+        print("Did not record video because main loop was never entered.")
