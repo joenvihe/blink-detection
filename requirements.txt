@@ -1,0 +1,8 @@
+scipy==1.2.1
+imutils==0.5.1
+numpy==1.16.2
+dlib==19.16.0
+opencv-python==4.0.0.21
+matplotlib==3.0.2
+scikit-image==0.14.2
+pygame==1.9.4
